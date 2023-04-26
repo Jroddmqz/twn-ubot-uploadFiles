@@ -115,8 +115,10 @@ def thumbail_(_video_):
             video.write_videofile(path_+".mp4")
             # Liberar los recursos
             video.close()
+            print("El archivo MOV parece estar bien.")
         except:
-            namethumb = None
+            print("El archivo MOV parece estar dañado.")
+            return None
     return namethumb
 
 async def main():
@@ -199,10 +201,11 @@ async def main():
                         )
             elif extension.lower() in {'mp4', 'mkv', 'avi', 'mov'}:
                 _thumbs_ = thumbail_(x)
+                print(f"thumbs es --<>>>{_thumbs_}")
                 if extension.lower()=="mov":
                     if _thumbs_ == None:
                         print(f"pass video corrupted:{x}")
-                        pass
+                        continue
                     path_, ext_ = os.path.splitext(x)
                     x = path_+".mp4"
                 if n_extension == extension and len(n_file) <= 8:
