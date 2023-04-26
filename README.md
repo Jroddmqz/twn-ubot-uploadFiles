@@ -16,7 +16,7 @@ TheWNetwork bot to upload massively to a chat scheduling the messages.
 - ``pkg in python-numpy -y`` 
 - ``pkg in opencv-python -y``
 - ``pkg install libjpeg-turbo``
--``LDFLAGS="-L/system/lib/" -CFLAGS="-I/data/data/com.termux/files/usr/include/" pip install Pillow``
+-``LDFLAGS="-L/system/lib/" CFLAGS="-I/data/data/com.termux/files/usr/include/" pip install Pillow``
 
 DISCLAIMER OF SOFTWARE WARRANTY
 THEWNETWORK PROVIDES THE SOFTWARE TO YOU "AS IS" AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
