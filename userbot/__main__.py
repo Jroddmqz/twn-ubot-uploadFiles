@@ -19,10 +19,18 @@ app = Client(
 )
 
 
-def progress(current, total):
+def progress2(current, total):
     percent = 100 * (current / total)
     bar = '▋' * int(percent) + '-' * (100 - int(percent))
     print("\r", f'\r[{bar}] {round(percent, 2)}%', end='')
+
+
+def progress(current, total):
+    percent = 100 * (current / total)
+    bar_length = 40
+    filled_length = int(percent / 100 * bar_length)
+    bar = '▋' * filled_length + '-' * (bar_length - filled_length)
+    print(f'\r[{bar}] {round(percent, 2)}%', end='')
 
 
 def get_file_size_in_mb(file_path):
@@ -45,7 +53,6 @@ def resizer2(_image_):
     img = Image.open(_image_)
     path_, ext_ = os.path.splitext(_image_)
     newname = path_+"lite"+ext_
-    # newname = str(_image_).split('.')[0] + "_resize." + str(_image_).split('.')[1]
     img.save(newname, optimize=True, quality=85)
     return newname
 
@@ -53,7 +60,6 @@ def resizer2(_image_):
 def resizer(_image_):
     with Image.open(_image_) as img:
         width, height = img.size
-        print(f"Width={width} - Height={height}")
         img = img.convert("RGB")
 
     if width * height > 5242880 or width > 4096 or height > 4096:
@@ -76,7 +82,6 @@ def thumbail_(_video_):
     path_, ext_ = os.path.splitext(_video_)
     namethumb = path_+".jpg"
     if ext_.lower() == ".mp4":
-        print("mp4")
         # Abrir el video
         cap = cv2.VideoCapture(_video_)
         # Obtener el número de fotogramas
@@ -92,7 +97,6 @@ def thumbail_(_video_):
         # Liberar los recursos
         cap.release()
     elif ext_.lower() == ".mkv":
-        print("mkv")
         # Abrir el archivo MKV
         video = VideoFileClip(_video_)
         # Obtener la miniatura en el segundo 5 del video
@@ -102,15 +106,14 @@ def thumbail_(_video_):
         # Liberar los recursos
         video.close()
     elif ext_.lower() == ".mov":
-        print("mov")
         # Abrir el archivo MOV
         try:
             video = VideoFileClip(_video_)
             # Obtener la miniatura en el segundo 5 del video
             thumbnail = video.get_frame(5)
             # Guardar la miniatura como imagen
-            #thumbnail.save_frame(newname)
-            #np.savetxt('thumbnail.jpg', thumbnail)
+            # thumbnail.save_frame(newname)
+            # np.savetxt('thumbnail.jpg', thumbnail)
             imageio.imwrite(namethumb, thumbnail)
             video.write_videofile(path_+".mp4")
             # Liberar los recursos
@@ -136,6 +139,7 @@ async def main():
         in_exe = False
         n_file = []
         n_file_raw = []
+        finaldel = []
 
         order_by_extension = ['jpg', 'jpeg', 'png']
         keys = {k: v for v, k in enumerate(order_by_extension)}
@@ -161,6 +165,7 @@ async def main():
                 n_extension = None
             if extension.lower() in {'jpg', 'png', 'jpeg'}:
                 x_resize = resizer(x)
+                finaldel.append(x_resize)
                 if n_extension == extension and len(n_file) <= 8:
                     if len(n_file) == 0:
                         n_file.append(InputMediaPhoto(x_resize, caption=Config.caption, parse_mode=enums.ParseMode.HTML))
@@ -201,12 +206,13 @@ async def main():
                         )
             elif extension.lower() in {'mp4', 'mkv', 'avi', 'mov'}:
                 _thumbs_ = thumbail_(x)
-                if extension.lower()=="mov":
-                    if _thumbs_ == None:
-                        print(f"pass video corrupted:{x}")
-                        continue
+                finaldel.append(_thumbs_)
+                if _thumbs_ is None:
+                    print(f"pass video corrupted:{x}")
+                    continue
                     path_, ext_ = os.path.splitext(x)
                     x = path_+".mp4"
+
                 if n_extension == extension and len(n_file) <= 8:
                     if len(n_file) == 0:
                         n_file.append(InputMediaVideo(x, thumb=_thumbs_, caption=Config.caption, parse_mode=enums.ParseMode.HTML))
@@ -216,11 +222,7 @@ async def main():
                 else:
                     if len(n_file) > 0:
                         n_file.append(InputMediaVideo(x, thumb=_thumbs_))
-                        await app.send_media_group(
-                            chat_id=int(Config.chat_id),
-                            media=n_file,
-                            schedule_date=schedule
-                        )
+                        await app.send_media_group(chat_id=int(Config.chat_id), media=n_file, schedule_date=schedule)
                         n_file = []
                     else:
                         await app.send_video(
@@ -271,5 +273,8 @@ async def main():
                       + str(speed) + ' MB/s')
                 in_exe = False
 
-
+        for x in finaldel:
+            if os.path.exists(x):
+                os.remove(x)
+        finaldel.clear()
 app.run(main())
