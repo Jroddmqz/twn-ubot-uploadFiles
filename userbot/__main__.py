@@ -201,7 +201,6 @@ async def main():
                         )
             elif extension.lower() in {'mp4', 'mkv', 'avi', 'mov'}:
                 _thumbs_ = thumbail_(x)
-                print(f"thumbs es --<>>>{_thumbs_}")
                 if extension.lower()=="mov":
                     if _thumbs_ == None:
                         print(f"pass video corrupted:{x}")
