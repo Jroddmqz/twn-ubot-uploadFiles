@@ -10,6 +10,11 @@ TheWNetwork bot to upload massively to a chat scheduling the messages.
 
 - ``python -m userbot`` 
 
+## Termux Installation Prerequisites
+
+- ``pkg update`` 
+- ``pkg in python-numpy -y`` 
+- ``pkg in opencv-python -y`` 
 
 DISCLAIMER OF SOFTWARE WARRANTY
 THEWNETWORK PROVIDES THE SOFTWARE TO YOU "AS IS" AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
